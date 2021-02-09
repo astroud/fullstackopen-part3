@@ -31,6 +31,16 @@ app.get('/api/persons', (req, res) => {
   res.send(persons)
 })
 
+app.get('/info', (req, res) => {
+  const entries = persons.length
+
+  res.send(`
+    <p>Phonebook has entries for ${entries} people</p>
+    <p>${Date()}</p>
+  `)
+  
+})
+
 app.listen(port, () => {
   console.log(`Phonebook server listening at http://localhost:${port}`)
 })
