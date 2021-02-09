@@ -26,11 +26,6 @@ let persons = [
   }
 ]
 
-
-app.get('/api/persons', (req, res) => {
-  res.send(persons)
-})
-
 app.get('/info', (req, res) => {
   const entries = persons.length
 
@@ -39,6 +34,23 @@ app.get('/info', (req, res) => {
     <p>${Date()}</p>
   `)
   
+})
+
+app.get('/api/persons', (req, res) => {
+  res.send(persons)
+})
+
+app.get('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  let entry = persons.filter( person => person.id === id)
+
+  if (entry.length === 0) {
+    return res.status(404).json({ 
+      error: 'person not found' 
+    })
+  }
+  
+  res.json(entry)
 })
 
 app.listen(port, () => {
