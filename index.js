@@ -53,6 +53,23 @@ app.get('/api/persons/:id', (req, res) => {
   res.json(entry)
 })
 
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const numberOfEntries = persons.length
+
+  persons = persons.filter(person => person.id !== id)
+  
+  if(numberOfEntries === persons.length) {
+    return res.status(404).json({ 
+      error: 'entry already deleted' 
+    })
+  }
+
+  res.json({ 
+    success: 'entry deleted' 
+  })
+})
+
 app.listen(port, () => {
   console.log(`Phonebook server listening at http://localhost:${port}`)
 })
