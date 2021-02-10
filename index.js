@@ -1,6 +1,8 @@
 var express = require('express')
 var app = express()
 
+app.use(express.json())
+
 const port = 3001
 
 let persons = [
@@ -25,6 +27,10 @@ let persons = [
     "id": 4
   }
 ]
+
+const generateId = () => {
+  return Date.now()
+}
 
 app.get('/info', (req, res) => {
   const entries = persons.length
@@ -67,6 +73,33 @@ app.delete('/api/persons/:id', (req, res) => {
 
   res.json({ 
     success: 'entry deleted' 
+  })
+})
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+  const existingNames = persons.map(person => person.name.toLowerCase()) 
+
+  if (!body.name) {
+    return res.status(400).json({ 
+      error: 'name missing' 
+    })
+  }
+  else if (!body.number) {
+    return res.status(400).json({ 
+      error: 'phone number missing' 
+    })
+  }
+  else if (existingNames.includes(body.name.toLowerCase())) {
+    return res.status(400).json({ 
+      error: 'entry already exists with that name' 
+    })
+  }
+
+  body.id = generateId()
+  persons = persons.concat(body)
+  res.status(200).json({
+    "success": true
   })
 })
 

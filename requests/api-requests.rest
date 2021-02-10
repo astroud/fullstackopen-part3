@@ -19,3 +19,42 @@ DELETE http://localhost:3001/api/persons/1
 ###
 
 DELETE http://localhost:3001/api/persons/9999999
+
+###
+
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "name": "first{{$randomInt 0 100}} last{{$randomInt 0 100}}",
+    "number": "555-555-5555"
+}
+
+###
+
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "number": "555-555-5555"
+}
+
+###
+
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "name": "first{{$randomInt 0 100}} last{{$randomInt 0 100}}"
+}
+
+###
+
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Arto Hellas",
+    "number": "040-123456",
+    "id": 1
+  }
