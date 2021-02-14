@@ -23,7 +23,7 @@ const MORGAN_FORMAT = (tokens, req, res) => {
 
 app.use(morgan(MORGAN_FORMAT))
 
-const port = 3001
+const port = process.env.PORT || 3001
 
 let persons = [
   { 
