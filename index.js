@@ -92,7 +92,9 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   }
   
-  Entry.findByIdAndUpdate(request.params.id, entry, { new: true })
+  const options = { new: true, runValidators: true, context: 'query' }
+
+  Entry.findByIdAndUpdate(request.params.id, entry, options)
     .then(updatedEntry => {
       response.json(updatedEntry)
     })
@@ -110,7 +112,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   }
   if (error.name === 'ValidationError') {
-    return response.status(422).send({ error: 'a person with that name already exists' })
+    return response.status(422).send({ error: `${error.message}` })
   }
 
   next(error)
