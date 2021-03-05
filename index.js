@@ -1,34 +1,32 @@
 require('dotenv').config()
-const { response } = require('express')
 const express = require('express')
+
 const app = express()
 const morgan = require('morgan')
 const Entry = require('./models/entry')
-
 
 app.use(express.static('build'))
 app.use(express.json())
 
 const MORGAN_FORMAT = (tokens, request, response) => {
   const body = request.method === 'POST'
-                ? JSON.stringify(request.body)
-                : ''
+    ? JSON.stringify(request.body)
+    : ''
   return [
     tokens.method(request, response),
     tokens.url(request, response),
     tokens.status(request, response),
     tokens.res(request, response, 'content-length'), '-',
     tokens['response-time'](request, response), 'ms',
-    body
+    body,
   ].join(' ')
 }
 
 app.use(morgan(MORGAN_FORMAT))
 
-
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Entry.countDocuments({}, (error, count) => {
-    if(error) {
+    if (error) {
       next(error)
     }
 
@@ -36,69 +34,68 @@ app.get('/info', (request, response) => {
     <p>Phonebook has entries for ${count} people</p>
     <p>${Date()}</p>
     `)
-  });
+  })
 })
 
 app.get('/api/persons', (request, response, next) => {
   Entry.find({})
-    .then(entry => {
+    .then((entry) => {
       response.json(entry)
     })
-    .catch(error => next(error))
+    .catch((error) => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
   Entry.findById(request.params.id)
-    .then(entry => {
-      if(entry) {
+    .then((entry) => {
+      if (entry) {
         response.json(entry)
-      }
-      else {
+      } else {
         response.status(404).end()
       }
     })
-    .catch(error => next(error))
+    .catch((error) => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
-  Entry.deleteOne({_id: request.params.id})
-    .then(code => {
+  Entry.deleteOne({ _id: request.params.id })
+    .then((code) => {
       console.log(`Deleting ${request.params.id} !`)
       response.json(code)
     })
-    .catch(error => next(error))
+    .catch((error) => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
-  const body = request.body
-  
+  const { body } = request
+
   const entry = new Entry({
     name: body.name,
     number: body.number,
   })
 
   entry.save()
-    .then(savedEntry => {
+    .then((savedEntry) => {
       response.json(savedEntry)
     })
-    .catch(error => next(error))
+    .catch((error) => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const body = request.body
+  const { body } = request
 
   const entry = {
     name: body.name,
     number: body.number,
   }
-  
+
   const options = { new: true, runValidators: true, context: 'query' }
 
   Entry.findByIdAndUpdate(request.params.id, entry, options)
-    .then(updatedEntry => {
+    .then((updatedEntry) => {
       response.json(updatedEntry)
     })
-    .catch(error => next(error))
+    .catch((error) => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -114,7 +111,6 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'ValidationError') {
     return response.status(422).send({ error: `${error.message}` })
   }
-
   next(error)
 }
 

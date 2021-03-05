@@ -30,7 +30,7 @@ const entry = new Entry({
 })
 
 if(process.argv[4]){
-  entry.save().then(result => {
+  entry.save().then( () => {
     console.log(`added ${newName} number ${newNumber} to phonebook`)
     mongoose.connection.close()
   })
